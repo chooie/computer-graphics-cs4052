@@ -20,7 +20,7 @@ using namespace std;
 // the vertex position (in X, Y, Z, W)
 // Since our triangle vertices were specified as vec3, we just set W to 1.0.
 static const char* pVS =
-  "#version 400"
+  "#version 400\n"
   "in vec3 vPosition;"
   "in vec4 vColor;"
   "out vec4 color;"
@@ -33,7 +33,7 @@ static const char* pVS =
 // Note: no input in this shader, it just outputs the colour of all fragments,
 // in this case set to red (format: R, G, B, A).
 static const char* pFS =
-  "#version 400"
+  "#version 400\n"
   "out vec4 FragColor;"
   "void main() {"
     "FragColor = vec4(1.0, 0.0, 0.0, 1.0);"
