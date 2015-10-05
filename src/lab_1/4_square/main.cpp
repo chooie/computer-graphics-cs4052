@@ -10,7 +10,7 @@ void error_callback(int error, const char* description) {
   fputs(description, stderr);
 }
 
-const int WINDOW_WIDTH = 800;
+const int WINDOW_WIDTH = 600;
 const int WINDOW_HEIGHT = 600;
 const char WINDOW_NAME[] = "Hello Triangle";
 
@@ -72,13 +72,13 @@ int main() {
   // glFrontFace(GL_CW); // GL_CCW for counter clock-wise
 
   float points[] = {
-     1.0f,  1.0f,  0.0f, // Top-right
-     1.0f, -1.0f,  0.0f, // Bottom-right
-    -1.0f, -1.0f,  0.0f, // Bottom-left
+     0.5f,  0.5f,  0.0f, // Top-right
+     0.5f, -0.5f,  0.0f, // Bottom-right
+    -0.5f, -0.5f,  0.0f, // Bottom-left
 
-    -1.0f, -1.0f,  0.0f, // Bottom-left
-    -1.0f,  1.0f,  0.0f, // Top-left
-     1.0f,  1.0f,  0.0f  // Top-right
+    -0.5f, -0.5f,  0.0f, // Bottom-left
+    -0.5f,  0.5f,  0.0f, // Top-left
+     0.5f,  0.5f,  0.0f  // Top-right
   };
 
   float colours[] = {
@@ -126,7 +126,7 @@ int main() {
     "out vec3 colour;"
     "void main() {"
     "  colour = vertex_colour;"
-    "  gl_Position = vec4 (vertex_position, 2.0);"
+    "  gl_Position = vec4 (vertex_position, 1.0);"
     "}";
 
   const char* fragment_shader =
