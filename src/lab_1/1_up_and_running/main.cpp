@@ -19,13 +19,13 @@ int main() {
   // Register callback that is called when an error occurs
   glfwSetErrorCallback(error_callback);
 
-  // start GL context and O/S window using the GLFW helper library
+  // Start GL context and O/S window using the GLFW helper library
   if (!glfwInit()) {
     fprintf(stderr, "ERROR: could not start GLFW3\n");
     return 1;
   }
 
-	// uncomment these lines if on Apple OS X
+	// Uncomment these lines if on Apple OS X
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -35,15 +35,18 @@ int main() {
     WINDOW_NAME, NULL, NULL);
 
   if (!window) {
-    fprintf(stderr, "ERROR: could not open window with GLFW4\n");
+    fprintf(stderr, "ERROR: could not open window with GLFW\n");
     glfwTerminate();
     return 1;
   }
+
   glfwMakeContextCurrent(window);
 
-  // start GLEW extension handler
+  // Start GLEW extension handler
   glewExperimental = GL_TRUE; // Try to get latest OpenGL features
+
   GLenum err = glewInit();
+
   if (GLEW_OK != err) {
     /* Problem: glewInit failed, something is seriously wrong. */
     fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
@@ -51,36 +54,43 @@ int main() {
 
   // Must have OpenGL v4.0
   if (!glewIsSupported("GL_VERSION_4_0")) {
-    fprintf(stderr, "ERROR: must have OpenGL v4.0\n");
+    fprintf(stderr, "ERROR: must have OpenGL v4.0+\n");
   }
 
-  // get version info
+  // Get version info
   const GLubyte* renderer = glGetString(GL_RENDERER); // get renderer string
   const GLubyte* version = glGetString(GL_VERSION); // version as a string
   printf("Renderer: %s\n", renderer);
   printf("OpenGL version supported %s\n", version);
 
-  // tell GL to only draw onto a pixel if the shape is closer to the viewer
-  glEnable(GL_DEPTH_TEST); // enable depth-testing
-  glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
+  // Tell GL to only draw onto a pixel if the shape is closer to the viewer
+  glEnable(GL_DEPTH_TEST); // Enable depth-testing
+  glDepthFunc(GL_LESS); // Depth-testing interprets a smaller value as "closer"
 
   /* OTHER STUFF GOES HERE NEXT */
   float points[] = {
-    0.0f,  0.5f,  0.0f,
-    0.5f, -0.5f,  0.0f,
-    -0.5f, -0.5f,  0.0f
+    0.0f,  1.0f,  0.0f,
+    1.0f, -1.0f,  0.0f,
+    -1.0f, -1.0f,  0.0f
   };
 
-  GLuint vbo = 0;
+  // Vertex Buffer Object
+  // Generate an empty buffer
+  GLuint vbo;
   glGenBuffers(1, &vbo);
+  // Set it as current buffer in OpenGL's state machine
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, 9 * sizeof (float), points, GL_STATIC_DRAW);
+  // Copy points into currently bound buffer
+  glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
 
-  GLuint vao = 0;
+  // Vertex Attribute Object
+  GLuint vao;
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
   glEnableVertexAttribArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  // Define layout of vertex buffer '0', '3' means that variables are vec3 made
+  // from every 3 floats in the buffer.
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
   const char* vertex_shader =
@@ -110,19 +120,19 @@ int main() {
   glLinkProgram(shader_programme);
 
   while (!glfwWindowShouldClose (window)) {
-    // wipe the drawing surface clear
+    // Wipe the drawing surface clear
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(shader_programme);
     glBindVertexArray(vao);
-    // draw points 0-3 from the currently bound VAO with current in-use shader
+    // Draw points 0-3 from the currently bound VAO with current in-use shader
     glDrawArrays(GL_TRIANGLES, 0, 3);
-    // update other events like input handling
+    // Update other events like input handling
     glfwPollEvents();
-    // put the stuff we've been drawing onto the display
+    // Put the stuff we've been drawing onto the display
     glfwSwapBuffers(window);
   }
 
-  // close GL context and any other GLFW resources
+  // Close GL context and any other GLFW resources
   glfwTerminate();
   return 0;
 }
