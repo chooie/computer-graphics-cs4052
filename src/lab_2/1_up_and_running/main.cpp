@@ -157,8 +157,8 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(shader_programme);
     glBindVertexArray(vao);
-    // Draw points 0-6 from the currently bound VAO with current in-use shader
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    // Draw points 0-3 from the currently bound VAO with current in-use shader
+    glDrawArrays(GL_TRIANGLES, 0, 3);
     // Update other events like input handling
     glfwPollEvents();
     // Put the stuff we've been drawing onto the display
