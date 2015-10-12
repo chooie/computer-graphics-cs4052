@@ -33,28 +33,28 @@ void handleUserInput(GLFWwindow* window) {
 
   /* Translation */
 
-  // Press `Q` - Translate positive x
-  if (glfwGetKey(window, GLFW_KEY_Q)) {
+  // Press `D` - Translate positive x
+  if (glfwGetKey(window, GLFW_KEY_D)) {
     printf("Transl. Pos X!\n");
   }
-  // Press `W` - Translate negative x
-  if (glfwGetKey(window, GLFW_KEY_W)) {
+  // Press `A` - Translate negative x
+  if (glfwGetKey(window, GLFW_KEY_A)) {
     printf("Transl. Neg X!\n");
   }
-  // Press `E` - Translate positive y
-  if (glfwGetKey(window, GLFW_KEY_E)) {
+  // Press `W` - Translate positive y
+  if (glfwGetKey(window, GLFW_KEY_W)) {
     printf("Transl. Pos Y!\n");
   }
-  // Press `R` - Translate negative y
-  if (glfwGetKey(window, GLFW_KEY_R)) {
+  // Press `S` - Translate negative y
+  if (glfwGetKey(window, GLFW_KEY_S)) {
     printf("Transl. Neg Y!\n");
   }
-  // Press `T` - Translate positive z
-  if (glfwGetKey(window, GLFW_KEY_T)) {
+  // Press `Q` - Translate positive z
+  if (glfwGetKey(window, GLFW_KEY_Q)) {
     printf("Transl. Pos Z!\n");
   }
-  // Press `Y` - Translate negative z
-  if (glfwGetKey(window, GLFW_KEY_Y)) {
+  // Press `E` - Translate negative z
+  if (glfwGetKey(window, GLFW_KEY_E)) {
     printf("Transl. Neg Z!\n");
   }
 
@@ -71,28 +71,28 @@ void handleUserInput(GLFWwindow* window) {
 
   /* Scaling - Non-Uniform */
 
-  // Press `A` - Scale Non-Uniform Negative X
-  if (glfwGetKey(window, GLFW_KEY_A)) {
+  // Press `Z` - Scale Non-Uniform Negative X
+  if (glfwGetKey(window, GLFW_KEY_Z)) {
     printf("Scale Non-Uniform Neg X!\n");
   }
-  // Press `S` - Scale Non-Uniform Positive X
-  if (glfwGetKey(window, GLFW_KEY_S)) {
+  // Press `X` - Scale Non-Uniform Positive X
+  if (glfwGetKey(window, GLFW_KEY_X)) {
     printf("Scale Non-Uniform Pos X!\n");
   }
-  // Press `D` - Scale Non-Uniform Negative Y
-  if (glfwGetKey(window, GLFW_KEY_D)) {
+  // Press `C` - Scale Non-Uniform Negative Y
+  if (glfwGetKey(window, GLFW_KEY_C)) {
     printf("Scale Non-Uniform Neg Y!\n");
   }
-  // Press `F` - Scale Non-Uniform Positive Y
-  if (glfwGetKey(window, GLFW_KEY_F)) {
+  // Press `V` - Scale Non-Uniform Positive Y
+  if (glfwGetKey(window, GLFW_KEY_V)) {
     printf("Scale Non-Uniform Pos Y!\n");
   }
-  // Press `G` - Scale Non-Uniform Negative Z
-  if (glfwGetKey(window, GLFW_KEY_G)) {
+  // Press `B` - Scale Non-Uniform Negative Z
+  if (glfwGetKey(window, GLFW_KEY_B)) {
     printf("Scale Non-Uniform Neg Z!\n");
   }
-  // Press `H` - Scale Non-Uniform Positive Z
-  if (glfwGetKey(window, GLFW_KEY_H)) {
+  // Press `N` - Scale Non-Uniform Positive Z
+  if (glfwGetKey(window, GLFW_KEY_N)) {
     printf("Scale Non-Uniform Pos Z!\n");
   }
 }
