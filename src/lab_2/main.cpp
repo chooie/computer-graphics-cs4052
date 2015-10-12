@@ -1,12 +1,13 @@
 // Include GLEW and new version of GL on Windows.
 // Always include before glfw
-#include "../../../lib/GL/glew.h"
+#include "../../lib/GL/glew.h"
 // GLFW helper library
-#include "../../../lib/GLFW/glfw3.h"
+#include "../../lib/GLFW/glfw3.h"
 #include <stdio.h>
 
 // My Utils
-#include "../../utils.cpp"
+#include "./../utils.cpp"
+#include "./user_input.cpp"
 
 // Called whenever GLFW encounters an error
 void error_callback(int error, const char* description) {
@@ -163,11 +164,7 @@ int main() {
     glfwPollEvents();
     // Put the stuff we've been drawing onto the display
     glfwSwapBuffers(window);
-
-    // Set window close flag when the user presses the esc key
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
-      glfwSetWindowShouldClose(window, 1);
-    }
+    handleUserInput(window);
   }
 
   glDeleteProgram(shader_programme);
