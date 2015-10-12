@@ -15,7 +15,7 @@ void error_callback(int error, const char* description) {
 
 const int WINDOW_WIDTH = 600;
 const int WINDOW_HEIGHT = 600;
-const char WINDOW_NAME[] = "Hello Triangle";
+const char WINDOW_NAME[] = "Moving Triangle";
 
 int main() {
 
@@ -75,23 +75,15 @@ int main() {
   // glFrontFace(GL_CW); // GL_CCW for counter clock-wise
 
   float points[] = {
-     0.5f,  0.5f,  0.0f, // Top-right
+     0.0f,  0.5f,  0.0f, // Top
      0.5f, -0.5f,  0.0f, // Bottom-right
     -0.5f, -0.5f,  0.0f, // Bottom-left
-
-    -0.5f, -0.5f,  0.0f, // Bottom-left
-    -0.5f,  0.5f,  0.0f, // Top-left
-     0.5f,  0.5f,  0.0f  // Top-right
   };
 
   float colours[] = {
-    1.0f, 0.0f, 0.0f, // Top-right
-    1.0f, 1.0f, 0.0f, // Bottom-right
-    1.0f, 1.0f, 0.0f, // Bottom-left
-
-    1.0f, 1.0f, 0.0f, // Bottom-left
-    1.0f, 0.0f, 0.0f, // Top-left
-    1.0f, 0.0f, 0.0f  // Top-right
+    1.0f, 0.0f, 0.0f, // Top
+    0.0f, 1.0f, 0.0f, // Bottom-right
+    0.0f, 0.0f, 1.0f, // Bottom-left
   };
 
   // Vertex Buffer Objects
@@ -126,7 +118,7 @@ int main() {
     "#version 400\n"
     "layout(location = 0) in vec3 vertex_position;"
     "layout(location = 1) in vec3 vertex_colour;"
-    "out vec3 colur;"
+    "out vec3 colour;"
     "void main() {"
     "  colour = vertex_colour;"
     "  gl_Position = vec4 (vertex_position, 1.0);"
@@ -177,6 +169,13 @@ int main() {
       glfwSetWindowShouldClose(window, 1);
     }
   }
+
+  glDeleteProgram(shader_programme);
+  glDeleteShader(fs);
+  glDeleteShader(vs);
+  glDeleteBuffers(1, &points_vbo);
+  glDeleteBuffers(1, &colours_vbo);
+  glDeleteVertexArrays(1, &vao);
 
   // Close GL context and any other GLFW resources
   glfwTerminate();
