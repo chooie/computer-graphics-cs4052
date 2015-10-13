@@ -119,10 +119,11 @@ int main() {
     "#version 400\n"
     "layout(location = 0) in vec3 vertex_position;"
     "layout(location = 1) in vec3 vertex_colour;"
+    "uniform mat4 matrix;"
     "out vec3 colour;"
     "void main() {"
     "  colour = vertex_colour;"
-    "  gl_Position = vec4 (vertex_position, 1.0);"
+    "  gl_Position = matrix * vec4(vertex_position, 1.0);"
     "}";
 
   const char* fragment_shader =
@@ -153,6 +154,17 @@ int main() {
 
   glLinkProgram(shader_programme);
 
+  GLfloat matrix[] = {
+		1.0f, 0.0f, 0.0f, 0.0f, // first column
+		0.0f, 1.0f, 0.0f, 0.0f, // second column
+		0.0f, 0.0f, 1.0f, 0.0f, // third column
+		0.0f, 0.0f, 0.0f, 1.0f // fourth column
+	};
+
+	int matrix_location = glGetUniformLocation(shader_programme, "matrix");
+	glUseProgram(shader_programme);
+	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, matrix);
+
   while (!glfwWindowShouldClose (window)) {
     // Wipe the drawing surface clear
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -164,7 +176,7 @@ int main() {
     glfwPollEvents();
     // Put the stuff we've been drawing onto the display
     glfwSwapBuffers(window);
-    handleUserInput(window);
+    handleUserInput(window, matrix_location);
   }
 
   glDeleteProgram(shader_programme);
