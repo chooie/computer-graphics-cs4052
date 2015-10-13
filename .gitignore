@@ -3,3 +3,6 @@
 
 # Ignore compiled programs
 myProgram
+
+# Ignore Log Files
+*.log
