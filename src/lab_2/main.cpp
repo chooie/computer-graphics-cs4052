@@ -7,8 +7,26 @@
 
 #include "../../lib/Math/maths_funcs.h"
 
-GLuint gScaleLocation;
+struct Matrix4f {
+    float m[4][4];
+};
+
+GLuint gWorldLocation;
+Matrix4f World;
+
 static float Scale = 0.0f;
+static float transX = 0.0f;
+static float transY = 0.0f;
+static float transZ = 0.0f;
+
+static float rotX = 0.0f;
+static float rotY = 0.0f;
+static float rotZ = 0.0f;
+
+static float uniformScale = 0.0f;
+static float scaleX = 0.0f;
+static float scaleY = 0.0f;
+static float scaleZ = 0.0f;
 
 // My Utils
 #include "./../utils.cpp"
@@ -126,11 +144,11 @@ int main() {
     "#version 400\n"
     "layout(location = 0) in vec3 vertex_position;"
     "layout(location = 1) in vec3 vertex_colour;"
-    "uniform float gScale;"
+    "uniform mat4 gWorld;"
     "out vec3 colour;"
     "void main() {"
     "  colour = vertex_colour;"
-    "  gl_Position = vec4(gScale * vertex_position.x, gScale * vertex_position.y, gScale * vertex_position.z, 1.0);"
+    "  gl_Position = gWorld * vec4(vertex_position, 1.0);"
     "}";
 
   const char* fragment_shader =
@@ -161,9 +179,15 @@ int main() {
 
   glLinkProgram(shader_programme);
 
-  gScaleLocation = glGetUniformLocation(shader_programme, "gScale");
+  gWorldLocation = glGetUniformLocation(shader_programme, "gWorld");
+
+  World.m[0][0] = 1.0f; World.m[0][1] = 0.0f; World.m[0][2] = 0.0f; World.m[0][3] = 0.0f;
+  World.m[1][0] = 0.0f; World.m[1][1] = 1.0f; World.m[1][2] = 0.0f; World.m[1][3] = 0.0f;
+  World.m[2][0] = 0.0f; World.m[2][1] = 0.0f; World.m[2][2] = 1.0f; World.m[2][3] = 0.0f;
+  World.m[3][0] = 0.0f; World.m[3][1] = 0.0f; World.m[3][2] = 0.0f; World.m[3][3] = 1.0f;
 
   while (!glfwWindowShouldClose (window)) {
+
     // Wipe the drawing surface clear
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glViewport (0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -176,7 +200,7 @@ int main() {
 
     handleUserInput(window);
 
-    glUniform1f(gScaleLocation, sinf(Scale));
+    glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, &World.m[0][0]);
     // Put the stuff we've been drawing onto the display
     glfwSwapBuffers(window);
   }
