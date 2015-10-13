@@ -14,7 +14,6 @@ struct Matrix4f {
 GLuint gWorldLocation;
 Matrix4f World;
 
-static float Scale = 0.0f;
 static float transX = 0.0f;
 static float transY = 0.0f;
 static float transZ = 0.0f;
