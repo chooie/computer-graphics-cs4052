@@ -35,6 +35,7 @@ void handleUserInput(GLFWwindow* window) {
 
   // Press `D` - Translate positive x
   if (glfwGetKey(window, GLFW_KEY_D)) {
+    glTranslatef(0.01f, 0.0f, 0.0f);
     printf("Transl. Pos X!\n");
   }
   // Press `A` - Translate negative x
