@@ -1,4 +1,5 @@
-void handleUserInput(GLFWwindow* window, int matrix_location) {
+void handleUserInput(GLFWwindow* window) {
+
   // Set window close flag when the user presses the esc key
   if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
     glfwSetWindowShouldClose(window, 1);
@@ -36,15 +37,16 @@ void handleUserInput(GLFWwindow* window, int matrix_location) {
   // Press `D` - Translate positive x
   if (glfwGetKey(window, GLFW_KEY_D)) {
     // Translate in positive x direction by 0.01
-    GLfloat matrix[] = {
-      1.0f, 0.0f, 0.0f, 0.0f, // first column
-      0.0f, 1.0f, 0.0f, 0.0f, // second column
-      0.0f, 0.0f, 1.0f, 0.0f, // third column
-      0.01f, 0.0f, 0.0f, 1.0f // fourth column
-    };
-    glUniformMatrix4fv(matrix_location, 1, GL_FALSE, matrix);
-
-    printf("Transl. Pos X!\n");
+    // GLfloat matrix[] = {
+    //   1.0f, 0.0f, 0.0f, 0.0f, // first column
+    //   0.0f, 1.0f, 0.0f, 0.0f, // second column
+    //   0.0f, 0.0f, 1.0f, 0.0f, // third column
+    //   0.01f, 0.0f, 0.0f, 1.0f // fourth column
+    // };
+    //
+    // printf("Transl. Pos X!\n");
+    //
+    // return matrix;
   }
   // Press `A` - Translate negative x
   if (glfwGetKey(window, GLFW_KEY_A)) {
@@ -71,10 +73,12 @@ void handleUserInput(GLFWwindow* window, int matrix_location) {
 
   // Press `-` - Scale Uniform Negative
   if (glfwGetKey(window, GLFW_KEY_MINUS)) {
+    Scale -= 0.01f;
     printf("Scale Uniform Neg!\n");
   }
   // Press `+` - Scale Uniform Positive
   if (glfwGetKey(window, GLFW_KEY_EQUAL)) {
+    Scale += 0.01f;
     printf("Scale Uniform Plus!\n");
   }
 

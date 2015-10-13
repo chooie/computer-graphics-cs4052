@@ -5,9 +5,16 @@
 #include "../../lib/GLFW/glfw3.h"
 #include <stdio.h>
 
+#include "../../lib/Math/maths_funcs.h"
+
+GLuint gScaleLocation;
+static float Scale = 0.0f;
+
 // My Utils
 #include "./../utils.cpp"
 #include "./user_input.cpp"
+
+#include <math.h>
 
 // Called whenever GLFW encounters an error
 void error_callback(int error, const char* description) {
@@ -119,11 +126,11 @@ int main() {
     "#version 400\n"
     "layout(location = 0) in vec3 vertex_position;"
     "layout(location = 1) in vec3 vertex_colour;"
-    "uniform mat4 matrix;"
+    "uniform float gScale;"
     "out vec3 colour;"
     "void main() {"
     "  colour = vertex_colour;"
-    "  gl_Position = matrix * vec4(vertex_position, 1.0);"
+    "  gl_Position = vec4(gScale * vertex_position.x, gScale * vertex_position.y, gScale * vertex_position.z, 1.0);"
     "}";
 
   const char* fragment_shader =
@@ -154,29 +161,24 @@ int main() {
 
   glLinkProgram(shader_programme);
 
-  GLfloat matrix[] = {
-		1.0f, 0.0f, 0.0f, 0.0f, // first column
-		0.0f, 1.0f, 0.0f, 0.0f, // second column
-		0.0f, 0.0f, 1.0f, 0.0f, // third column
-		0.0f, 0.0f, 0.0f, 1.0f // fourth column
-	};
-
-	int matrix_location = glGetUniformLocation(shader_programme, "matrix");
-	glUseProgram(shader_programme);
-	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, matrix);
+  gScaleLocation = glGetUniformLocation(shader_programme, "gScale");
 
   while (!glfwWindowShouldClose (window)) {
     // Wipe the drawing surface clear
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glViewport (0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     glUseProgram(shader_programme);
     glBindVertexArray(vao);
     // Draw points 0-3 from the currently bound VAO with current in-use shader
     glDrawArrays(GL_TRIANGLES, 0, 3);
     // Update other events like input handling
     glfwPollEvents();
+
+    handleUserInput(window);
+
+    glUniform1f(gScaleLocation, sinf(Scale));
     // Put the stuff we've been drawing onto the display
     glfwSwapBuffers(window);
-    handleUserInput(window, matrix_location);
   }
 
   glDeleteProgram(shader_programme);
