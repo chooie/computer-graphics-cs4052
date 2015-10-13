@@ -18,21 +18,7 @@
 #include "./globals.h"
 #include "./../utils.cpp"
 #include "user_input.cpp"
-
-const mat4 IDENTITY_MATRIX = mat4(
-  1.0f, 0.0f, 0.0f, 0.0f,
-  0.0f, 1.0f, 0.0f, 0.0f,
-  0.0f, 0.0f, 1.0f, 0.0f,
-  0.0f, 0.0f, 0.0f, 1.0f
-);
-
-mat4 productMatrix;
-
-vec3 translationVector;
-
-vec3 scaleVector;
-
-GLuint gWorldLocation;
+#include "transformations.h"
 
 // Keep track of window size for things like the viewport and the mouse cursor
 int g_gl_width = 600;
@@ -41,11 +27,16 @@ GLFWwindow* g_window = NULL;
 const char WINDOW_NAME[] = "Moving Triangle";
 
 int main() {
+  srand(clock());
 
   assert(restart_gl_log());
 	// All the GLFW and GLEW start-up code is moved to here in gl_utils.cpp
 	assert(start_gl());
 	// Tell GL to only draw onto a pixel if the shape is closer to the viewer
+
+  // Display window name before any user input
+  glfwSetWindowTitle(g_window, WINDOW_NAME);
+
 	glEnable(GL_DEPTH_TEST); // enable depth-testing
 	glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
 
@@ -128,53 +119,27 @@ int main() {
   glLinkProgram(shader_programme);
 
   // Get the location of the `gWorld` variable
-  gWorldLocation = glGetUniformLocation(shader_programme, "gWorld");
+  GLuint gWorldLocation = glGetUniformLocation(shader_programme, "gWorld");
 
-  while (!glfwWindowShouldClose (g_window)) {
+  float randomSeed = (float)getRandomDoubleBetween0And1();
+  float anotherRandomSeed = (float)getRandomDoubleBetween0And1();
+
+  while (!glfwWindowShouldClose(g_window)) {
 
     // Wipe the drawing surface clear
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glViewport (0, 0, g_gl_width, g_gl_width);
+    glViewport(0, 0, g_gl_width, g_gl_width);
     glUseProgram(shader_programme);
     glBindVertexArray(vao);
 
     /* Triangle 1 */
-
-    // Translation
-    translationVector = vec3(transX, transY, transZ);
-    productMatrix = translate(IDENTITY_MATRIX, translationVector);
-
-    // Rotation
-    productMatrix = rotate_x_deg(productMatrix, rotX);
-    productMatrix = rotate_y_deg(productMatrix, rotY);
-    productMatrix = rotate_z_deg(productMatrix, rotZ);
-
-    // Scaling
-    scaleVector = vec3(scaleX, scaleY, scaleZ);
-    productMatrix = scale(productMatrix, scaleVector);
-
-    // Pass the productMatrix in as the value for the `gWorld`
-    glUniformMatrix4fv(gWorldLocation, 1, GL_FALSE, (float *)&productMatrix);
-    // Draw points 0-3 from the currently bound VAO with current in-use shader
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    transformTriangle(gWorldLocation, IS_NOT_RANDOM);
 
     /* Triangle 2 */
+    transformTriangle(gWorldLocation, randomSeed);
 
-    // Translation
-    translationVector = vec3(-transX, -transY, -transZ);
-    productMatrix = translate(IDENTITY_MATRIX, translationVector);
-
-    // Rotation
-    productMatrix = rotate_x_deg(productMatrix, -rotX / 2);
-    productMatrix = rotate_y_deg(productMatrix, -rotY / 3);
-    productMatrix = rotate_z_deg(productMatrix, -rotZ / 4);
-
-    // Scaling
-    scaleVector = vec3(scaleX * 0.6, scaleY * 1.1f, scaleZ * 0.75f);
-    productMatrix = scale(productMatrix, scaleVector);
-
-    glUniformMatrix4fv(gWorldLocation, 1, GL_FALSE, (float *)&productMatrix);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    /* Triangle 3 */
+    transformTriangle(gWorldLocation, anotherRandomSeed);
 
     // Update other events like input handling
     glfwPollEvents();
@@ -183,7 +148,8 @@ int main() {
 
     // Put the stuff we've been drawing onto the display
     glfwSwapBuffers(g_window);
-  }
+
+  } // Window is closed
 
   glDeleteProgram(shader_programme);
   glDeleteShader(fs);
