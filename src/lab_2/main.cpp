@@ -34,7 +34,7 @@ vec3 scaleVector;
 
 GLuint gWorldLocation;
 
-// keep track of window size for things like the viewport and the mouse cursor
+// Keep track of window size for things like the viewport and the mouse cursor
 int g_gl_width = 600;
 int g_gl_height = 600;
 GLFWwindow* g_window = NULL;
@@ -43,9 +43,9 @@ const char WINDOW_NAME[] = "Moving Triangle";
 int main() {
 
   assert(restart_gl_log());
-	// all the GLFW and GLEW start-up code is moved to here in gl_utils.cpp
+	// All the GLFW and GLEW start-up code is moved to here in gl_utils.cpp
 	assert(start_gl());
-	// tell GL to only draw onto a pixel if the shape is closer to the viewer
+	// Tell GL to only draw onto a pixel if the shape is closer to the viewer
 	glEnable(GL_DEPTH_TEST); // enable depth-testing
 	glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
 
@@ -89,35 +89,34 @@ int main() {
   // Enable colours attribute
   glEnableVertexAttribArray(1);
 
-  const char* vertex_shader =
-    "#version 400\n"
-    "layout(location = 0) in vec3 vertex_position;"
-    "layout(location = 1) in vec3 vertex_colour;"
-    "uniform mat4 gWorld;"
-    "out vec3 colour;"
-    "void main() {"
-    "  colour = vertex_colour;"
-    "  gl_Position = gWorld * vec4(vertex_position, 1.0);"
-    "}";
+  const int NUMBER_OF_CHARS = 1024 * 256;
 
-  const char* fragment_shader =
-    "#version 400\n"
-    "in vec3 colour;"
-    "out vec4 frag_colour;"
-    "void main() {"
-    "  frag_colour = vec4(colour, 1.0);"
-    "}";
+  char vertex_shader[NUMBER_OF_CHARS];
+	char fragment_shader[NUMBER_OF_CHARS];
 
+  // Shader Source
+	assert(parse_file_into_str("vertex_shader.glsl", vertex_shader,
+    NUMBER_OF_CHARS));
+	assert(parse_file_into_str("fragment_shader.glsl", fragment_shader,
+    NUMBER_OF_CHARS));
+
+  const GLchar* pointer;
+
+  // Vertex Shader
   GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vs, 1, &vertex_shader, NULL);
-  glCompileShader(vs);
+  pointer = (const GLchar*)vertex_shader;
+	glShaderSource(vs, 1, &pointer, NULL);
+	glCompileShader(vs);
   logShaderCompilationStatus(vs, "Vertex Shader");
 
+  // Fragment Shader
   GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fs, 1, &fragment_shader, NULL);
+  pointer = (const GLchar*)fragment_shader;
+  glShaderSource(fs, 1, &pointer, NULL);
   glCompileShader(fs);
   logShaderCompilationStatus(fs, "Fragment Shader");
 
+  // Shader Programme
   GLuint shader_programme = glCreateProgram();
   glAttachShader(shader_programme, fs);
   glAttachShader(shader_programme, vs);
@@ -128,6 +127,7 @@ int main() {
 
   glLinkProgram(shader_programme);
 
+  // Get the location of the `gWorld` variable
   gWorldLocation = glGetUniformLocation(shader_programme, "gWorld");
 
   while (!glfwWindowShouldClose (g_window)) {
@@ -153,6 +153,7 @@ int main() {
     scaleVector = vec3(scaleX, scaleY, scaleZ);
     productMatrix = scale(productMatrix, scaleVector);
 
+    // Pass the productMatrix in as the value for the `gWorld`
     glUniformMatrix4fv(gWorldLocation, 1, GL_FALSE, (float *)&productMatrix);
     // Draw points 0-3 from the currently bound VAO with current in-use shader
     glDrawArrays(GL_TRIANGLES, 0, 3);
