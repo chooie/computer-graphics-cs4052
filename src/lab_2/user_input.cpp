@@ -9,43 +9,37 @@ void handleUserInput(GLFWwindow* window) {
 
   /* Rotation */
 
-  // // Press `1` - Rotate positive x
-  // if (glfwGetKey(window, GLFW_KEY_1)) {
-  //   rotX += 0.1;
-  //   rotateX();
-  //   printf("Rot. Pos X!\n");
-  // }
-  // // Press `2` - Rotate negative x
-  // if (glfwGetKey(window, GLFW_KEY_2)) {
-  //   rotX -= 0.1;
-  //   rotateX();
-  //   printf("Rot. Neg X!\n");
-  // }
-  // // Press `3` - Rotate positive y
-  // if (glfwGetKey(window, GLFW_KEY_3)) {
-  //   rotY += 0.1;
-  //   rotateY();
-  //   printf("Rot. Pos Y!\n");
-  // }
-  // // Press `4` - Rotate negative y
-  // if (glfwGetKey(window, GLFW_KEY_4)) {
-  //   rotY -= 0.1;
-  //   rotateY();
-  //   printf("Rot. Neg Y!\n");
-  // }
-  // // Press `5` - Rotate positive z
-  // if (glfwGetKey(window, GLFW_KEY_5)) {
-  //   rotZ += 0.1;
-  //   rotateZ();
-  //   printf("Rot. Pos Z!\n");
-  // }
-  // // Press `6` - Rotate negative z
-  // if (glfwGetKey(window, GLFW_KEY_6)) {
-  //   rotZ -= 0.1;
-  //   rotateZ();
-  //   printf("Rot. Neg Z!\n");
-  // }
-  //
+  // Press `1` - Rotate positive x
+  if (glfwGetKey(window, GLFW_KEY_1)) {
+    rotX += 5.0;
+    printf("Rot. Pos X!\n");
+  }
+  // Press `2` - Rotate negative x
+  if (glfwGetKey(window, GLFW_KEY_2)) {
+    rotX -= 5.0;
+    printf("Rot. Neg X!\n");
+  }
+  // Press `3` - Rotate positive y
+  if (glfwGetKey(window, GLFW_KEY_3)) {
+    rotY += 0.1;
+    printf("Rot. Pos Y!\n");
+  }
+  // Press `4` - Rotate negative y
+  if (glfwGetKey(window, GLFW_KEY_4)) {
+    rotY -= 0.1;
+    printf("Rot. Neg Y!\n");
+  }
+  // Press `5` - Rotate positive z
+  if (glfwGetKey(window, GLFW_KEY_5)) {
+    rotZ += 0.1;
+    printf("Rot. Pos Z!\n");
+  }
+  // Press `6` - Rotate negative z
+  if (glfwGetKey(window, GLFW_KEY_6)) {
+    rotZ -= 0.1;
+    printf("Rot. Neg Z!\n");
+  }
+
   /* Translation */
 
   // Press `D` - Translate positive x
@@ -79,21 +73,19 @@ void handleUserInput(GLFWwindow* window) {
     printf("Transl. Neg Z!\n");
   }
 
-  // /* Scaling - Uniform */
-  //
-  // // Press `-` - Scale Uniform Negative
-  // if (glfwGetKey(window, GLFW_KEY_MINUS)) {
-  //   uniformScale -= 0.01f;
-  //   scaleUniformly();
-  //   printf("Scale Uniform Neg!\n");
-  // }
-  // // Press `+` - Scale Uniform Positive
-  // if (glfwGetKey(window, GLFW_KEY_EQUAL)) {
-  //   uniformScale += 0.01f;
-  //   scaleUniformly();
-  //   printf("Scale Uniform Plus!\n");
-  // }
-  //
+  /* Scaling - Uniform */
+
+  // Press `-` - Scale Uniform Negative
+  if (glfwGetKey(window, GLFW_KEY_MINUS)) {
+    uniformScale -= 0.01f;
+    printf("Scale Uniform Neg!\n");
+  }
+  // Press `+` - Scale Uniform Positive
+  if (glfwGetKey(window, GLFW_KEY_EQUAL)) {
+    uniformScale += 0.01f;
+    printf("Scale Uniform Plus!\n");
+  }
+
   // /* Scaling - Non-Uniform */
   //
   // // Press `Z` - Scale Non-Uniform Negative X

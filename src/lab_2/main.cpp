@@ -7,21 +7,18 @@
 
 #include "../../lib/Math/maths_funcs.cpp"
 
-struct Matrix4f {
-    float m[4][4];
-};
-
 GLuint gWorldLocation;
-Matrix4f World;
 
-mat4 testMatrix = mat4(
+mat4 testMatrix;
+
+mat4 identityMatrix = mat4(
   1.0f, 0.0f, 0.0f, 0.0f,
   0.0f, 1.0f, 0.0f, 0.0f,
   0.0f, 0.0f, 1.0f, 0.0f,
   0.0f, 0.0f, 0.0f, 1.0f
 );
 
-mat4 translationMatrix;
+vec3 translationVector;
 
 static float transX = 0.0f;
 static float transY = 0.0f;
@@ -52,13 +49,6 @@ const int WINDOW_HEIGHT = 600;
 const char WINDOW_NAME[] = "Moving Triangle";
 
 int main() {
-
-  translationMatrix = mat4(
-    1.0f, 0.0f, 0.0f, transX,
-    0.0f, 1.0f, 0.0f, transY,
-    0.0f, 0.0f, 1.0f, transZ,
-    0.0f, 0.0f, 0.0f, 1.0f
-  );
 
   // Register callback that is called when an error occurs
   glfwSetErrorCallback(error_callback);
@@ -204,13 +194,34 @@ int main() {
     glUseProgram(shader_programme);
     glBindVertexArray(vao);
     // Draw points 0-3 from the currently bound VAO with current in-use shader
+
+    // Translation
+    translationVector = vec3(transX, transY, transZ);
+    testMatrix = translate(identityMatrix, translationVector);
+
+    // Rotation
+
+    // Scaling
+
+    glUniformMatrix4fv(gWorldLocation, 1, GL_FALSE, (float *)&testMatrix);
     glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    // Translation
+    translationVector = vec3(-transX, -transY, -transZ);
+    testMatrix = translate(identityMatrix, translationVector);
+
+    // Rotation
+
+    // Scaling
+
+    glUniformMatrix4fv(gWorldLocation, 1, GL_FALSE, (float *)&testMatrix);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
     // Update other events like input handling
     glfwPollEvents();
 
     handleUserInput(window);
 
-    glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, (float *)&testMatrix);
     // Put the stuff we've been drawing onto the display
     glfwSwapBuffers(window);
   }
