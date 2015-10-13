@@ -103,10 +103,6 @@ int main() {
   glEnable(GL_DEPTH_TEST); // Enable depth-testing
   glDepthFunc(GL_LESS); // Depth-testing interprets a smaller value as "closer"
 
-  // glEnable(GL_CULL_FACE); // cull face
-  // glCullFace(GL_BACK); // cull back face
-  // glFrontFace(GL_CW); // GL_CCW for counter clock-wise
-
   float points[] = {
      0.0f,  0.5f,  0.0f, // Top
      0.5f, -0.5f,  0.0f, // Bottom-right
