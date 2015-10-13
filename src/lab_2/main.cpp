@@ -11,7 +11,7 @@ GLuint gWorldLocation;
 
 mat4 testMatrix;
 
-mat4 identityMatrix = mat4(
+const mat4 IDENTITY_MATRIX = mat4(
   1.0f, 0.0f, 0.0f, 0.0f,
   0.0f, 1.0f, 0.0f, 0.0f,
   0.0f, 0.0f, 1.0f, 0.0f,
@@ -19,6 +19,8 @@ mat4 identityMatrix = mat4(
 );
 
 vec3 translationVector;
+
+vec3 scaleVector;
 
 static float transX = 0.0f;
 static float transY = 0.0f;
@@ -29,9 +31,9 @@ static float rotY = 0.0f;
 static float rotZ = 0.0f;
 
 static float uniformScale = 0.0f;
-static float scaleX = 0.0f;
-static float scaleY = 0.0f;
-static float scaleZ = 0.0f;
+static float scaleX = 1.0f;
+static float scaleY = 1.0f;
+static float scaleZ = 1.0f;
 
 // My Utils
 #include "./../utils.cpp"
@@ -193,26 +195,40 @@ int main() {
     glViewport (0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     glUseProgram(shader_programme);
     glBindVertexArray(vao);
-    // Draw points 0-3 from the currently bound VAO with current in-use shader
+
+    /* Triangle 1 */
 
     // Translation
     translationVector = vec3(transX, transY, transZ);
-    testMatrix = translate(identityMatrix, translationVector);
+    testMatrix = translate(IDENTITY_MATRIX, translationVector);
 
     // Rotation
+    testMatrix = rotate_x_deg(testMatrix, rotX);
+    testMatrix = rotate_y_deg(testMatrix, rotY);
+    testMatrix = rotate_z_deg(testMatrix, rotZ);
 
     // Scaling
+    scaleVector = vec3(scaleX, scaleY, scaleZ);
+    testMatrix = scale(testMatrix, scaleVector);
 
     glUniformMatrix4fv(gWorldLocation, 1, GL_FALSE, (float *)&testMatrix);
+    // Draw points 0-3 from the currently bound VAO with current in-use shader
     glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    /* Triangle 2 */
 
     // Translation
     translationVector = vec3(-transX, -transY, -transZ);
-    testMatrix = translate(identityMatrix, translationVector);
+    testMatrix = translate(IDENTITY_MATRIX, translationVector);
 
     // Rotation
+    testMatrix = rotate_x_deg(testMatrix, -rotX / 2);
+    testMatrix = rotate_y_deg(testMatrix, -rotY / 3);
+    testMatrix = rotate_z_deg(testMatrix, -rotZ / 4);
 
     // Scaling
+    scaleVector = vec3(scaleX * 0.6, scaleY * 1.1f, scaleZ * 0.75f);
+    testMatrix = scale(testMatrix, scaleVector);
 
     glUniformMatrix4fv(gWorldLocation, 1, GL_FALSE, (float *)&testMatrix);
     glDrawArrays(GL_TRIANGLES, 0, 3);
