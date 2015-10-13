@@ -15,11 +15,13 @@ GLuint gWorldLocation;
 Matrix4f World;
 
 mat4 testMatrix = mat4(
-  0.5f, 0.0f, 0.0f, 0.0f,
-  0.0f, 0.5f, 0.0f, 0.0f,
-  0.0f, 0.0f, 0.5f, 0.0f,
+  1.0f, 0.0f, 0.0f, 0.0f,
+  0.0f, 1.0f, 0.0f, 0.0f,
+  0.0f, 0.0f, 1.0f, 0.0f,
   0.0f, 0.0f, 0.0f, 1.0f
 );
+
+mat4 translationMatrix;
 
 static float transX = 0.0f;
 static float transY = 0.0f;
@@ -50,6 +52,13 @@ const int WINDOW_HEIGHT = 600;
 const char WINDOW_NAME[] = "Moving Triangle";
 
 int main() {
+
+  translationMatrix = mat4(
+    1.0f, 0.0f, 0.0f, transX,
+    0.0f, 1.0f, 0.0f, transY,
+    0.0f, 0.0f, 1.0f, transZ,
+    0.0f, 0.0f, 0.0f, 1.0f
+  );
 
   // Register callback that is called when an error occurs
   glfwSetErrorCallback(error_callback);
@@ -186,11 +195,6 @@ int main() {
   glLinkProgram(shader_programme);
 
   gWorldLocation = glGetUniformLocation(shader_programme, "gWorld");
-
-  World.m[0][0] = 1.0f; World.m[0][1] = 0.0f; World.m[0][2] = 0.0f; World.m[0][3] = 0.0f;
-  World.m[1][0] = 0.0f; World.m[1][1] = 1.0f; World.m[1][2] = 0.0f; World.m[1][3] = 0.0f;
-  World.m[2][0] = 0.0f; World.m[2][1] = 0.0f; World.m[2][2] = 1.0f; World.m[2][3] = 0.0f;
-  World.m[3][0] = 0.0f; World.m[3][1] = 0.0f; World.m[3][2] = 0.0f; World.m[3][3] = 1.0f;
 
   while (!glfwWindowShouldClose (window)) {
 
