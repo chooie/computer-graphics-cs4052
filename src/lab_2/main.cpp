@@ -34,11 +34,6 @@ vec3 scaleVector;
 
 GLuint gWorldLocation;
 
-// Called whenever GLFW encounters an error
-void error_callback(int error, const char* description) {
-  fputs(description, stderr);
-}
-
 // keep track of window size for things like the viewport and the mouse cursor
 int g_gl_width = 600;
 int g_gl_height = 600;
@@ -47,56 +42,12 @@ const char WINDOW_NAME[] = "Moving Triangle";
 
 int main() {
 
-  // Register callback that is called when an error occurs
-  glfwSetErrorCallback(error_callback);
-
-  // Start GL context and O/S window using the GLFW helper library
-  if (!glfwInit()) {
-    fprintf(stderr, "ERROR: could not start GLFW3\n");
-    return 1;
-  }
-
-	// Uncomment these lines if on Apple OS X
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-  GLFWwindow* window = glfwCreateWindow(g_gl_width, g_gl_height,
-    WINDOW_NAME, NULL, NULL);
-
-  if (!window) {
-    fprintf(stderr, "ERROR: could not open window with GLFW\n");
-    glfwTerminate();
-    return 1;
-  }
-
-  glfwMakeContextCurrent(window);
-
-  // Start GLEW extension handler
-  glewExperimental = GL_TRUE; // Try to get latest OpenGL features
-
-  GLenum err = glewInit();
-
-  if (GLEW_OK != err) {
-    /* Problem: glewInit failed, something is seriously wrong. */
-    fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-  }
-
-  // Must have OpenGL v4.0
-  if (!glewIsSupported("GL_VERSION_4_0")) {
-    fprintf(stderr, "ERROR: must have OpenGL v4.0+\n");
-  }
-
-  // Get version info
-  const GLubyte* renderer = glGetString(GL_RENDERER); // get renderer string
-  const GLubyte* version = glGetString(GL_VERSION); // version as a string
-  printf("Renderer: %s\n", renderer);
-  printf("OpenGL version supported %s\n", version);
-
-  // Tell GL to only draw onto a pixel if the shape is closer to the viewer
-  glEnable(GL_DEPTH_TEST); // Enable depth-testing
-  glDepthFunc(GL_LESS); // Depth-testing interprets a smaller value as "closer"
+  assert(restart_gl_log());
+	// all the GLFW and GLEW start-up code is moved to here in gl_utils.cpp
+	assert(start_gl());
+	// tell GL to only draw onto a pixel if the shape is closer to the viewer
+	glEnable(GL_DEPTH_TEST); // enable depth-testing
+	glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
 
   float points[] = {
      0.0f,  0.5f,  0.0f, // Top
@@ -179,7 +130,7 @@ int main() {
 
   gWorldLocation = glGetUniformLocation(shader_programme, "gWorld");
 
-  while (!glfwWindowShouldClose (window)) {
+  while (!glfwWindowShouldClose (g_window)) {
 
     // Wipe the drawing surface clear
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -227,10 +178,10 @@ int main() {
     // Update other events like input handling
     glfwPollEvents();
 
-    handleUserInput(window);
+    handleUserInput(g_window);
 
     // Put the stuff we've been drawing onto the display
-    glfwSwapBuffers(window);
+    glfwSwapBuffers(g_window);
   }
 
   glDeleteProgram(shader_programme);
