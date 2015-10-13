@@ -1,3 +1,4 @@
+#define __MAIN__
 // Include GLEW and new version of GL on Windows.
 // Always include before glfw
 #include "../../lib/GL/glew.h"
@@ -5,11 +6,18 @@
 #include "../../lib/GLFW/glfw3.h"
 #include <stdio.h>
 
+#include <math.h>
+
+// Anton's Math Lib
 #include "../../lib/Math/maths_funcs.cpp"
 
-GLuint gWorldLocation;
+// Anton's Util Lib
+#include "../../lib/GL_UTILS/gl_utils.cpp"
 
-mat4 testMatrix;
+// My Libs
+#include "./globals.h"
+#include "./../utils.cpp"
+#include "user_input.cpp"
 
 const mat4 IDENTITY_MATRIX = mat4(
   1.0f, 0.0f, 0.0f, 0.0f,
@@ -18,36 +26,23 @@ const mat4 IDENTITY_MATRIX = mat4(
   0.0f, 0.0f, 0.0f, 1.0f
 );
 
+mat4 productMatrix;
+
 vec3 translationVector;
 
 vec3 scaleVector;
 
-static float transX = 0.0f;
-static float transY = 0.0f;
-static float transZ = 0.0f;
-
-static float rotX = 0.0f;
-static float rotY = 0.0f;
-static float rotZ = 0.0f;
-
-static float uniformScale = 0.0f;
-static float scaleX = 1.0f;
-static float scaleY = 1.0f;
-static float scaleZ = 1.0f;
-
-// My Utils
-#include "./../utils.cpp"
-#include "./user_input.cpp"
-
-#include <math.h>
+GLuint gWorldLocation;
 
 // Called whenever GLFW encounters an error
 void error_callback(int error, const char* description) {
   fputs(description, stderr);
 }
 
-const int WINDOW_WIDTH = 600;
-const int WINDOW_HEIGHT = 600;
+// keep track of window size for things like the viewport and the mouse cursor
+int g_gl_width = 600;
+int g_gl_height = 600;
+GLFWwindow* g_window = NULL;
 const char WINDOW_NAME[] = "Moving Triangle";
 
 int main() {
@@ -67,7 +62,7 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT,
+  GLFWwindow* window = glfwCreateWindow(g_gl_width, g_gl_height,
     WINDOW_NAME, NULL, NULL);
 
   if (!window) {
@@ -188,7 +183,7 @@ int main() {
 
     // Wipe the drawing surface clear
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glViewport (0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+    glViewport (0, 0, g_gl_width, g_gl_width);
     glUseProgram(shader_programme);
     glBindVertexArray(vao);
 
@@ -196,18 +191,18 @@ int main() {
 
     // Translation
     translationVector = vec3(transX, transY, transZ);
-    testMatrix = translate(IDENTITY_MATRIX, translationVector);
+    productMatrix = translate(IDENTITY_MATRIX, translationVector);
 
     // Rotation
-    testMatrix = rotate_x_deg(testMatrix, rotX);
-    testMatrix = rotate_y_deg(testMatrix, rotY);
-    testMatrix = rotate_z_deg(testMatrix, rotZ);
+    productMatrix = rotate_x_deg(productMatrix, rotX);
+    productMatrix = rotate_y_deg(productMatrix, rotY);
+    productMatrix = rotate_z_deg(productMatrix, rotZ);
 
     // Scaling
     scaleVector = vec3(scaleX, scaleY, scaleZ);
-    testMatrix = scale(testMatrix, scaleVector);
+    productMatrix = scale(productMatrix, scaleVector);
 
-    glUniformMatrix4fv(gWorldLocation, 1, GL_FALSE, (float *)&testMatrix);
+    glUniformMatrix4fv(gWorldLocation, 1, GL_FALSE, (float *)&productMatrix);
     // Draw points 0-3 from the currently bound VAO with current in-use shader
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -215,18 +210,18 @@ int main() {
 
     // Translation
     translationVector = vec3(-transX, -transY, -transZ);
-    testMatrix = translate(IDENTITY_MATRIX, translationVector);
+    productMatrix = translate(IDENTITY_MATRIX, translationVector);
 
     // Rotation
-    testMatrix = rotate_x_deg(testMatrix, -rotX / 2);
-    testMatrix = rotate_y_deg(testMatrix, -rotY / 3);
-    testMatrix = rotate_z_deg(testMatrix, -rotZ / 4);
+    productMatrix = rotate_x_deg(productMatrix, -rotX / 2);
+    productMatrix = rotate_y_deg(productMatrix, -rotY / 3);
+    productMatrix = rotate_z_deg(productMatrix, -rotZ / 4);
 
     // Scaling
     scaleVector = vec3(scaleX * 0.6, scaleY * 1.1f, scaleZ * 0.75f);
-    testMatrix = scale(testMatrix, scaleVector);
+    productMatrix = scale(productMatrix, scaleVector);
 
-    glUniformMatrix4fv(gWorldLocation, 1, GL_FALSE, (float *)&testMatrix);
+    glUniformMatrix4fv(gWorldLocation, 1, GL_FALSE, (float *)&productMatrix);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     // Update other events like input handling

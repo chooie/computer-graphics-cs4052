@@ -1,4 +1,4 @@
-#include <math.h>
+#include "globals.h"
 
 const float DEGREE_INCREMENT = 5.0f;
 const float TRANSLATE_INCREMENT = 0.01f;
