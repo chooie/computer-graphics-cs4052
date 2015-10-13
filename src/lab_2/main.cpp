@@ -5,7 +5,7 @@
 #include "../../lib/GLFW/glfw3.h"
 #include <stdio.h>
 
-#include "../../lib/Math/maths_funcs.h"
+#include "../../lib/Math/maths_funcs.cpp"
 
 struct Matrix4f {
     float m[4][4];
@@ -13,6 +13,13 @@ struct Matrix4f {
 
 GLuint gWorldLocation;
 Matrix4f World;
+
+mat4 testMatrix = mat4(
+  0.5f, 0.0f, 0.0f, 0.0f,
+  0.0f, 0.5f, 0.0f, 0.0f,
+  0.0f, 0.0f, 0.5f, 0.0f,
+  0.0f, 0.0f, 0.0f, 1.0f
+);
 
 static float transX = 0.0f;
 static float transY = 0.0f;
@@ -199,7 +206,7 @@ int main() {
 
     handleUserInput(window);
 
-    glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, &World.m[0][0]);
+    glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, (float *)&testMatrix);
     // Put the stuff we've been drawing onto the display
     glfwSwapBuffers(window);
   }
