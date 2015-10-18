@@ -27,6 +27,7 @@ GLFWwindow* g_window = NULL;
 const char WINDOW_NAME[] = "Moving Triangle";
 
 int main() {
+  // Seed RNG
   srand(clock());
 
   assert(restart_gl_log());
@@ -121,6 +122,7 @@ int main() {
   // Get the location of the `gWorld` variable
   GLuint gWorldLocation = glGetUniformLocation(shader_programme, "gWorld");
 
+  // Random seeds for triangles
   float randomSeed = (float)getRandomDoubleBetween0And1();
   float anotherRandomSeed = (float)getRandomDoubleBetween0And1();
 
@@ -151,6 +153,7 @@ int main() {
 
   } // Window is closed
 
+  // Tidy Up
   glDeleteProgram(shader_programme);
   glDeleteShader(fs);
   glDeleteShader(vs);

@@ -12,6 +12,9 @@ const mat4 IDENTITY_MATRIX = mat4(
 );
 
 void transformTriangle(GLuint gWorldLocation, float randomSeed) {
+  assert(randomSeed >= 0);
+  assert(randomSeed < 1);
+
   if (randomSeed == IS_NOT_RANDOM) {
     randomSeed = 0;
   }
@@ -47,5 +50,4 @@ void transformTriangle(GLuint gWorldLocation, float randomSeed) {
   glUniformMatrix4fv(gWorldLocation, 1, GL_FALSE, (float *)&productMatrix);
   // Draw points 0-3 from the currently bound VAO with current in-use shader
   glDrawArrays(GL_TRIANGLES, 0, 3);
-
 }
