@@ -96,7 +96,7 @@ void display() {
 	// bottom-left - Tilted
 	mat4 view = translate(identity_mat4(), vec3(0.0, 0.0, -40.0));
 	mat4 persp_proj = perspective(
-    45.0,
+    fov,
     (float)g_gl_width / (float)g_gl_height,
     0.1,
     100.0
@@ -110,6 +110,13 @@ void display() {
 	glDrawArrays(GL_TRIANGLES, 0, teapot_vertex_count);
 
 	// bottom-right - Rotating
+  view = translate(identity_mat4(), vec3(0.0, 0.0, -40.0));
+  persp_proj = perspective(
+    45.0,
+    (float)g_gl_width / (float)g_gl_height,
+    0.1,
+    100.0
+  );
   model = rotate_y_deg(identity_mat4(), degreesRotation);
 
   glViewport(g_gl_width / 2, 0, g_gl_width / 2, g_gl_height / 2);
@@ -125,9 +132,8 @@ void display() {
 
   view = look_at(cam_pos, target_pos, up_direction);
 
-  // Double fov
   persp_proj = perspective(
-    fov,
+    45.0,
     (float)g_gl_width / (float)g_gl_height,
     0.1,
     100.0
@@ -142,9 +148,9 @@ void display() {
   glDrawArrays(GL_TRIANGLES, 0, teapot_vertex_count);
 
   // top-left - orthographic side-view
-  view = translate(identity_mat4(), vec3(0.0, 0.0, -20.0));
+  view = translate(identity_mat4(), vec3(0.0, 0.0, -40.0));
 
-  persp_proj = ortho(-20.0, 20.0, -20.0, 20.0, -20.0, 20.0);
+  persp_proj = ortho(-20.0, 20.0, -20.0, 20.0, -40.0, 40.0);
 
   model = identity_mat4();
 
