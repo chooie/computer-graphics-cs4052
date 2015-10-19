@@ -15,6 +15,7 @@
 
 // My utils
 #include "user_input.cpp"
+#include "my_utils.cpp"
 
 #include <string>
 #include <fstream>
@@ -36,6 +37,8 @@ unsigned int teapot_vao = 0;
 GLuint loc1;
 GLuint loc2;
 int degreesRotation = 0;
+double fov = 45.0;
+bool increasing = true;
 
 // Keep track of window size for things like the viewport and the mouse cursor
 int g_gl_width = 800.0;
@@ -90,7 +93,7 @@ void display() {
   // object by 45 degrees, the view transform sets the camera at -40 on the
   // z-axis, and the perspective projection is setup using Antons method
 
-	// bottom-left
+	// bottom-left - Tilted
 	mat4 view = translate(identity_mat4(), vec3(0.0, 0.0, -40.0));
 	mat4 persp_proj = perspective(
     45.0,
@@ -106,9 +109,8 @@ void display() {
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
 	glDrawArrays(GL_TRIANGLES, 0, teapot_vertex_count);
 
-	// bottom-right
-  model = identity_mat4();
-  model = rotate_y_deg(model, degreesRotation);
+	// bottom-right - Rotating
+  model = rotate_y_deg(identity_mat4(), degreesRotation);
 
   glViewport(g_gl_width / 2, 0, g_gl_width / 2, g_gl_height / 2);
   glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
@@ -116,7 +118,34 @@ void display() {
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
   glDrawArrays(GL_TRIANGLES, 0, teapot_vertex_count);
 
-	// top-left
+	// top-right
+  vec3 cam_pos = vec3(40.0, 30.0, 20.0);
+  vec3 target_pos = vec3(0.0, 0.0, 0.0);
+  vec3 up_direction = vec3(0.0, 1.0, 0.0);
+
+  view = look_at(cam_pos, target_pos, up_direction);
+
+  // Double fov
+  persp_proj = perspective(
+    fov,
+    (float)g_gl_width / (float)g_gl_height,
+    0.1,
+    100.0
+  );
+
+  model = identity_mat4();
+
+  glViewport(g_gl_width / 2, g_gl_height / 2, g_gl_width / 2, g_gl_height / 2);
+  glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
+	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
+	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
+  glDrawArrays(GL_TRIANGLES, 0, teapot_vertex_count);
+
+  // top-left - orthographic side-view
+  view = translate(identity_mat4(), vec3(0.0, 0.0, -1.0));
+
+  persp_proj = ortho(-20.0, 20.0, -20.0, 20.0, -20.0, 20.0);
+
   model = identity_mat4();
 
   glViewport(0, g_gl_height / 2, g_gl_width / 2, g_gl_height / 2);
@@ -125,30 +154,9 @@ void display() {
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
   glDrawArrays(GL_TRIANGLES, 0, teapot_vertex_count);
 
-	// top-right
-  glViewport(g_gl_width / 2, g_gl_height / 2, g_gl_width / 2, g_gl_height / 2);
-  glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
-	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
-	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
-  glDrawArrays(GL_TRIANGLES, 0, teapot_vertex_count);
-
 }
 
 void init() {
-
-	// Create 3 vertices that make up a triangle that fits on the viewport
-	GLfloat vertices[] = {
-    -1.0f, -1.0f, 0.0f, 1.0,
-		 1.0f, -1.0f, 0.0f, 1.0,
-		 0.0f,  1.0f, 0.0f, 1.0
-  };
-	// Create a color array that identfies the colors of each vertex
-  // (format R, G, B, A)
-	GLfloat colors[] = {
-    0.0f, 1.0f, 0.0f, 1.0f,
-		1.0f, 0.0f, 0.0f, 1.0f,
-		0.0f, 0.0f, 1.0f, 1.0f
-  };
 
   // Set up the shaders
 	shaderProgramID = CompileShaders();
@@ -167,10 +175,28 @@ int main(int argc, char** argv){
   init();
 
   while (!glfwWindowShouldClose(g_window)) {
+    // Change degrees
     degreesRotation += 1;
 
     if (degreesRotation >= 360) {
       degreesRotation = 0;
+    }
+
+    // Change fov
+    if (increasing) {
+      fov += 1.0;
+    }
+
+    if (!increasing) {
+      fov -= 1.0;
+    }
+
+    if (fov <= 45.0) {
+      increasing = true;
+    }
+
+    if (fov >= 90.0) {
+      increasing = false;
     }
 
     _update_fps_counter (g_window);
