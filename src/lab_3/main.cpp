@@ -35,6 +35,7 @@ GLuint shaderProgramID;
 unsigned int teapot_vao = 0;
 GLuint loc1;
 GLuint loc2;
+int degreesRotation = 0;
 
 // Keep track of window size for things like the viewport and the mouse cursor
 int g_gl_width = 800.0;
@@ -106,10 +107,30 @@ void display() {
 	glDrawArrays(GL_TRIANGLES, 0, teapot_vertex_count);
 
 	// bottom-right
+  model = identity_mat4();
+  model = rotate_y_deg(model, degreesRotation);
+
+  glViewport(g_gl_width / 2, 0, g_gl_width / 2, g_gl_height / 2);
+  glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
+	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
+	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
+  glDrawArrays(GL_TRIANGLES, 0, teapot_vertex_count);
 
 	// top-left
+  model = identity_mat4();
+
+  glViewport(0, g_gl_height / 2, g_gl_width / 2, g_gl_height / 2);
+  glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
+	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
+	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
+  glDrawArrays(GL_TRIANGLES, 0, teapot_vertex_count);
 
 	// top-right
+  glViewport(g_gl_width / 2, g_gl_height / 2, g_gl_width / 2, g_gl_height / 2);
+  glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
+	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
+	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
+  glDrawArrays(GL_TRIANGLES, 0, teapot_vertex_count);
 
 }
 
@@ -132,8 +153,6 @@ void init() {
   // Set up the shaders
 	shaderProgramID = CompileShaders();
 
-  printf("Shader program ID: %d\n", shaderProgramID);
-
   // Load teapot mesh into a vertex buffer array
   generateObjectBufferTeapot();
 
@@ -148,6 +167,12 @@ int main(int argc, char** argv){
   init();
 
   while (!glfwWindowShouldClose(g_window)) {
+    degreesRotation += 1;
+
+    if (degreesRotation >= 360) {
+      degreesRotation = 0;
+    }
+
     _update_fps_counter (g_window);
     display();
     glfwPollEvents();
