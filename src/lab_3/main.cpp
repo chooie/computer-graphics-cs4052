@@ -99,7 +99,7 @@ void display() {
   );
 	mat4 model = rotate_z_deg(identity_mat4(), 45);
 
-	glViewport (0, 0, g_gl_width / 2, g_gl_height / 2);
+	glViewport(0, 0, g_gl_width / 2, g_gl_height / 2);
 	glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
 	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
@@ -130,7 +130,9 @@ void init() {
   };
 
   // Set up the shaders
-	GLuint shaderProgramID = CompileShaders();
+	shaderProgramID = CompileShaders();
+
+  printf("Shader program ID: %d\n", shaderProgramID);
 
   // Load teapot mesh into a vertex buffer array
   generateObjectBufferTeapot();

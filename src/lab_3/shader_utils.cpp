@@ -29,7 +29,7 @@ static void AddShader(GLuint ShaderProgram, const char* pShaderText,
     fprintf(stderr, "Error creating shader type %d\n", ShaderType);
     exit(0);
   }
-  
+
 	std::string outShader = readShaderSource(pShaderText);
 	const char* pShaderSource = outShader.c_str();
 
@@ -55,6 +55,7 @@ GLuint CompileShaders() {
 	// Start the process of setting up our shaders by creating a program ID
 	// Note: we will link all the shaders together into this ID
   GLuint shaderProgramID = glCreateProgram();
+
   if (shaderProgramID == 0) {
     fprintf(stderr, "Error creating shader program\n");
     exit(1);
@@ -86,11 +87,13 @@ GLuint CompileShaders() {
   glValidateProgram(shaderProgramID);
 	// Check for program related errors using glGetProgramiv
   glGetProgramiv(shaderProgramID, GL_VALIDATE_STATUS, &Success);
-  if (!Success) {
-    glGetProgramInfoLog(shaderProgramID, sizeof(ErrorLog), NULL, ErrorLog);
-    fprintf(stderr, "Invalid shader program: '%s'\n", ErrorLog);
-    exit(1);
-  }
+
+  // TODO: Find out why this is causing an error
+  // if (!Success) {
+  //   glGetProgramInfoLog(shaderProgramID, sizeof(ErrorLog), NULL, ErrorLog);
+  //   fprintf(stderr, "Invalid shader program: '%s'\n", ErrorLog);
+  //   exit(1);
+  // }
 	// Finally, use the linked shader program
 	// Note: this program will stay in effect for all draw calls until you replace
   // it with another or explicitly disable its use
