@@ -142,7 +142,7 @@ void display() {
   glDrawArrays(GL_TRIANGLES, 0, teapot_vertex_count);
 
   // top-left - orthographic side-view
-  view = translate(identity_mat4(), vec3(0.0, 0.0, -1.0));
+  view = translate(identity_mat4(), vec3(0.0, 0.0, -20.0));
 
   persp_proj = ortho(-20.0, 20.0, -20.0, 20.0, -20.0, 20.0);
 
