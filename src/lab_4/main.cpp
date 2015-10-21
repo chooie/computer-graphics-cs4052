@@ -15,7 +15,6 @@
 
 // My utils
 #include "user_input.cpp"
-#include "my_utils.cpp"
 
 #include <string>
 #include <fstream>
@@ -36,9 +35,7 @@ GLuint shaderProgramID;
 unsigned int teapot_vao = 0;
 GLuint loc1;
 GLuint loc2;
-int degreesRotation = 0;
-double fov = 45.0;
-bool increasing = true;
+GLfloat rotatez = 0.0f;
 
 // Keep track of window size for things like the viewport and the mouse cursor
 int g_gl_width = 800.0;
@@ -88,78 +85,38 @@ void display() {
 	int view_mat_location = glGetUniformLocation(shaderProgramID, "view");
 	int proj_mat_location = glGetUniformLocation(shaderProgramID, "proj");
 
-	// Here is where the code for the viewport lab will go, to get you started I
-  // have drawn a t-pot in the bottom left. The model transform rotates the
-  // object by 45 degrees, the view transform sets the camera at -40 on the
-  // z-axis, and the perspective projection is setup using Antons method
+	// Hierarchy of Teapots
 
-	// bottom-left - Tilted
-	mat4 view = translate(identity_mat4(), vec3(0.0, 0.0, -40.0));
+	// Root of the Hierarchy
+	mat4 view = identity_mat4 ();
 	mat4 persp_proj = perspective(
-    fov,
-    (float)g_gl_width / (float)g_gl_height,
-    0.1,
-    100.0
-  );
-	mat4 model = rotate_z_deg(identity_mat4(), 45);
-
-	glViewport(0, 0, g_gl_width / 2, g_gl_height / 2);
-	glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
-	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
-	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
-	glDrawArrays(GL_TRIANGLES, 0, teapot_vertex_count);
-
-	// bottom-right - Rotating
-  view = translate(identity_mat4(), vec3(0.0, 0.0, -40.0));
-  persp_proj = perspective(
     45.0,
-    (float)g_gl_width / (float)g_gl_height,
+    (float)g_gl_width/(float)g_gl_height,
     0.1,
     100.0
   );
-  model = rotate_y_deg(identity_mat4(), degreesRotation);
+	mat4 local1 = identity_mat4 ();
+	local1 = rotate_z_deg (local1, 45.0f);
+	local1 = translate (local1, vec3 (0.0, 0.0, -60.0f));
 
-  glViewport(g_gl_width / 2, 0, g_gl_width / 2, g_gl_height / 2);
-  glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
-	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
-	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
-  glDrawArrays(GL_TRIANGLES, 0, teapot_vertex_count);
+	// for the root, we orient it in global space
+	mat4 global1 = local1;
+	// update uniforms & draw
+	glUniformMatrix4fv (proj_mat_location, 1, GL_FALSE, persp_proj.m);
+	glUniformMatrix4fv (view_mat_location, 1, GL_FALSE, view.m);
+	glUniformMatrix4fv (matrix_location, 1, GL_FALSE, global1.m);
+	glDrawArrays (GL_TRIANGLES, 0, teapot_vertex_count);
 
-	// top-right - 'move' camera
-  vec3 cam_pos = vec3(40.0, 30.0, 20.0);
-  vec3 target_pos = vec3(0.0, 0.0, 0.0);
-  vec3 up_direction = vec3(0.0, 1.0, 0.0);
-
-  view = look_at(cam_pos, target_pos, up_direction);
-
-  persp_proj = perspective(
-    45.0,
-    (float)g_gl_width / (float)g_gl_height,
-    0.1,
-    100.0
-  );
-
-  model = identity_mat4();
-
-  glViewport(g_gl_width / 2, g_gl_height / 2, g_gl_width / 2, g_gl_height / 2);
-  glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
-	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
-	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
-  glDrawArrays(GL_TRIANGLES, 0, teapot_vertex_count);
-
-  // top-left - orthographic side-view
-  view = translate(identity_mat4(), vec3(0.0, 0.0, -40.0));
-
-  persp_proj = ortho(-20.0, 20.0, -20.0, 20.0, -40.0, 40.0);
-
-  model = identity_mat4();
-
-  glViewport(0, g_gl_height / 2, g_gl_width / 2, g_gl_height / 2);
-  glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
-	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
-	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
-  glDrawArrays(GL_TRIANGLES, 0, teapot_vertex_count);
-
+	// child of hierarchy
+	mat4 local2 = identity_mat4 ();
+	local2 = rotate_y_deg (local2, rotatez);
+	// translation is 15 units in the y direction from the parents coordinate system
+	local2 = translate (local2, vec3 (0.0, -15.0, 0.0));
+	// global of the child is got by pre-multiplying the local of the child by the global of the parent
+	mat4 global2 = global1*local2;
+	// update uniform & draw
+	glUniformMatrix4fv (matrix_location, 1, GL_FALSE, global2.m);
+	glDrawArrays (GL_TRIANGLES, 0, teapot_vertex_count);
 }
 
 void init() {
@@ -181,30 +138,6 @@ int main(int argc, char** argv){
   init();
 
   while (!glfwWindowShouldClose(g_window)) {
-    // Change degrees
-    degreesRotation += 1;
-
-    if (degreesRotation >= 360) {
-      degreesRotation = 0;
-    }
-
-    // Change fov
-    if (increasing) {
-      fov += 1.0;
-    }
-
-    if (!increasing) {
-      fov -= 1.0;
-    }
-
-    if (fov <= 45.0) {
-      increasing = true;
-    }
-
-    if (fov >= 90.0) {
-      increasing = false;
-    }
-
     _update_fps_counter (g_window);
     display();
     glfwPollEvents();
