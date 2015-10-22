@@ -13,6 +13,10 @@
 // Anton's Util Lib
 #include "../../lib/GL_UTILS/gl_utils.cpp"
 
+float xPos = 0.0f;
+float yPos = 0.0f;
+float zPos = 0.0f;
+
 // My utils
 #include "user_input.cpp"
 
@@ -35,7 +39,7 @@ GLuint shaderProgramID;
 unsigned int teapot_vao = 0;
 GLuint loc1;
 GLuint loc2;
-GLfloat rotatez = 0.0f;
+GLfloat rotatey = 0.0f;
 
 // Keep track of window size for things like the viewport and the mouse cursor
 int g_gl_width = 800.0;
@@ -71,6 +75,16 @@ void generateObjectBufferTeapot() {
 	glVertexAttribPointer(loc2, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 }
 
+void drawTeaPot(int& proj_mat_location, int& view_mat_location,
+  int& matrix_location, mat4 persp_proj, mat4 view, mat4 global) {
+
+  glUniformMatrix4fv (proj_mat_location, 1, GL_FALSE, persp_proj.m);
+  glUniformMatrix4fv (view_mat_location, 1, GL_FALSE, view.m);
+  glUniformMatrix4fv (matrix_location, 1, GL_FALSE, global.m);
+  glDrawArrays (GL_TRIANGLES, 0, teapot_vertex_count);
+
+}
+
 void display() {
 
 	// tell GL to only draw onto a pixel if the shape is closer to the viewer
@@ -88,35 +102,99 @@ void display() {
 	// Hierarchy of Teapots
 
 	// Root of the Hierarchy
-	mat4 view = identity_mat4 ();
+	mat4 view = identity_mat4();
 	mat4 persp_proj = perspective(
     45.0,
     (float)g_gl_width/(float)g_gl_height,
     0.1,
-    100.0
+    1000.0
   );
-	mat4 local1 = identity_mat4 ();
-	local1 = rotate_z_deg (local1, 45.0f);
-	local1 = translate (local1, vec3 (0.0, 0.0, -60.0f));
+	mat4 local = identity_mat4();
+	local = translate(local, vec3(0.0, 0.0, -200.0f));
+  local = translate(local, vec3(xPos, yPos, zPos));
 
-	// for the root, we orient it in global space
-	mat4 global1 = local1;
-	// update uniforms & draw
-	glUniformMatrix4fv (proj_mat_location, 1, GL_FALSE, persp_proj.m);
-	glUniformMatrix4fv (view_mat_location, 1, GL_FALSE, view.m);
-	glUniformMatrix4fv (matrix_location, 1, GL_FALSE, global1.m);
-	glDrawArrays (GL_TRIANGLES, 0, teapot_vertex_count);
+	// For the root, we orient it in global space
+	mat4 global1 = local;
+	// Update uniforms & draw
+	drawTeaPot(proj_mat_location, view_mat_location, matrix_location,
+    persp_proj, view, global1);
 
-	// child of hierarchy
-	mat4 local2 = identity_mat4 ();
-	local2 = rotate_y_deg (local2, rotatez);
-	// translation is 15 units in the y direction from the parents coordinate system
-	local2 = translate (local2, vec3 (0.0, -15.0, 0.0));
-	// global of the child is got by pre-multiplying the local of the child by the global of the parent
-	mat4 global2 = global1*local2;
-	// update uniform & draw
-	glUniformMatrix4fv (matrix_location, 1, GL_FALSE, global2.m);
-	glDrawArrays (GL_TRIANGLES, 0, teapot_vertex_count);
+	// Child of hierarchy
+	local = identity_mat4();
+	// Translation is 15 units in the y direction from the parents coordinate
+  // system
+	local = translate(local, vec3(0.0, 15.0, 0.0));
+	// Global of the child is got by pre-multiplying the local of the child by the
+  // global of the parent
+	mat4 global2 = global1 * local;
+	drawTeaPot(proj_mat_location, view_mat_location, matrix_location,
+    persp_proj, view, global2);
+
+  local = identity_mat4();
+  local = translate(local, vec3(0.0, 15.0, 0.0));
+  local = rotate_y_deg(local, rotatey);
+  mat4 global3 = global2 * local;
+  drawTeaPot(proj_mat_location, view_mat_location, matrix_location,
+    persp_proj, view, global3);
+
+  local = identity_mat4();
+  local = translate(local, vec3(0.0, 15.0, 0.0));
+  local = rotate_y_deg(local, -2 * rotatey);
+  drawTeaPot(proj_mat_location, view_mat_location, matrix_location,
+    persp_proj, view, global3 * local);
+
+  // Forward, tilted
+  local = identity_mat4();
+  local = rotate_x_deg(local, 90.0);
+  local = translate(local, vec3(0.0, 0.0, 15.0));
+  mat4 global4 = global3 * local;
+  drawTeaPot(proj_mat_location, view_mat_location, matrix_location,
+    persp_proj, view, global4);
+
+  local = identity_mat4();
+  local = translate(local, vec3(0.0, 15.0, 0.0));
+  drawTeaPot(proj_mat_location, view_mat_location, matrix_location,
+    persp_proj, view, global4 * local);
+
+  // Right, tilted
+  local = identity_mat4();
+  local = rotate_z_deg(local, -90.0);
+  local = translate(local, vec3(15.0, 0.0, 0.0));
+  mat4 global5 = global3 * local;
+  drawTeaPot(proj_mat_location, view_mat_location, matrix_location,
+    persp_proj, view, global5);
+
+  local = identity_mat4();
+  local = translate(local, vec3(0.0, 15.0, 0.0));
+  drawTeaPot(proj_mat_location, view_mat_location, matrix_location,
+    persp_proj, view, global5 * local);
+
+  // Backward, tilted
+  local = identity_mat4();
+  local = rotate_x_deg(local, -90.0);
+  local = translate(local, vec3(0.0, 0.0, -15.0));
+  mat4 global6 = global3 * local;
+  drawTeaPot(proj_mat_location, view_mat_location, matrix_location,
+    persp_proj, view, global6);
+
+  local = identity_mat4();
+  local = translate(local, vec3(0.0, 15.0, 0.0));
+  drawTeaPot(proj_mat_location, view_mat_location, matrix_location,
+    persp_proj, view, global6 * local);
+
+  // Left, tilted
+  local = identity_mat4();
+  local = rotate_z_deg(local, 90.0);
+  local = translate(local, vec3(-15.0, 0.0, 0.0));
+  mat4 global7 = global3 * local;
+  drawTeaPot(proj_mat_location, view_mat_location, matrix_location,
+    persp_proj, view, global7);
+
+  local = identity_mat4();
+  local = translate(local, vec3(0.0, 15.0, 0.0));
+  drawTeaPot(proj_mat_location, view_mat_location, matrix_location,
+    persp_proj, view, global7 * local);
+
 }
 
 void init() {
@@ -129,7 +207,7 @@ void init() {
 
 }
 
-int main(int argc, char** argv){
+int main(int argc, char** argv) {
 
 	assert(restart_gl_log());
 	// All the GLFW and GLEW start-up code is moved to here in gl_utils.cpp
@@ -138,6 +216,13 @@ int main(int argc, char** argv){
   init();
 
   while (!glfwWindowShouldClose(g_window)) {
+    // Change degrees
+    rotatey += 1;
+
+    if (rotatey >= 360) {
+      rotatey = 0;
+    }
+
     _update_fps_counter (g_window);
     display();
     glfwPollEvents();
