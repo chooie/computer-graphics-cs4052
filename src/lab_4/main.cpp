@@ -111,6 +111,8 @@ void display() {
   );
 	mat4 local = identity_mat4();
 	local = translate(local, vec3(0.0, 0.0, -200.0f));
+
+  // Move based on user input
   local = translate(local, vec3(xPos, yPos, zPos));
 
 	// For the root, we orient it in global space
@@ -130,6 +132,7 @@ void display() {
 	drawTeaPot(proj_mat_location, view_mat_location, matrix_location,
     persp_proj, view, global2);
 
+  // Place a teapot above the previous one and have it rotate
   local = identity_mat4();
   local = translate(local, vec3(0.0, 15.0, 0.0));
   local = rotate_y_deg(local, rotatey);
@@ -137,6 +140,8 @@ void display() {
   drawTeaPot(proj_mat_location, view_mat_location, matrix_location,
     persp_proj, view, global3);
 
+  // Place the teapot above the previous one and have it rotate in the opposite
+  // direction
   local = identity_mat4();
   local = translate(local, vec3(0.0, 15.0, 0.0));
   local = rotate_y_deg(local, -2 * rotatey);

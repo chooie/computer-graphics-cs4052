@@ -89,7 +89,7 @@ GLuint CompileShaders() {
   glGetProgramiv(shaderProgramID, GL_VALIDATE_STATUS, &Success);
 
   // TODO: Find out why this is causing an error
-  // if (!Success) {
+  // if (Success == GL_FALSE) {
   //   glGetProgramInfoLog(shaderProgramID, sizeof(ErrorLog), NULL, ErrorLog);
   //   fprintf(stderr, "Invalid shader program: '%s'\n", ErrorLog);
   //   exit(1);
